@@ -8,8 +8,8 @@
 		<Item Name="FGV-MassData.vi" Type="VI" URL="../_support/FGV-MassData.vi"/>
 		<Item Name="Operation-FGV-MassData.ctl" Type="VI" URL="../_support/Operation-FGV-MassData.ctl"/>
 	</Item>
-	<Item Name="JKISM++ Array Parameter Status.vi" Type="VI" URL="../JKISM++ Array Parameter Status.vi"/>
-	<Item Name="JKISM++ Config Array Parameter Cache Size.vi" Type="VI" URL="../JKISM++ Config Array Parameter Cache Size.vi"/>
+	<Item Name="JKISM++ Config MassData Parameter Cache Size.vi" Type="VI" URL="../JKISM++ Config MassData Parameter Cache Size.vi"/>
 	<Item Name="JKISM++ Convert Argument to MassData.vim" Type="VI" URL="../JKISM++ Convert Argument to MassData.vim"/>
 	<Item Name="JKISM++ Convert MassData to Argument.vim" Type="VI" URL="../JKISM++ Convert MassData to Argument.vim"/>
+	<Item Name="JKISM++ MassData Parameter Status.vi" Type="VI" URL="../JKISM++ MassData Parameter Status.vi"/>
 </Library>
