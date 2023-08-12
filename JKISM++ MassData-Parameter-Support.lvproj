@@ -17,7 +17,7 @@
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
 		<Item Name="src" Type="Folder">
-			<Item Name="JKISM++ MassData Parameter Support.lvlib" Type="Library" URL="../src/JKISM++ MassData Parameter Support.lvlib"/>
+			<Item Name="JKISM++ MassData Parameter Support.lvlib" Type="Library" URL="../MassData-Parameter/JKISM++ MassData Parameter Support.lvlib"/>
 		</Item>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="user.lib" Type="Folder">
