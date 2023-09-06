@@ -24,6 +24,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
+      - uses: NEVSTOP-LAB/InstallNevstopPackage@main
+        with:
+          LabVIEW_Version: 2017
+          NEVSTOP-FTP-IP: ${{ secrets.VIPM_FTP_IP }}
+          NEVSTOP-FTP-PORT: ${{ secrets.VIPM_FTP_PORT }}
+          PackageName: JKI-State-Machine-Plus-Plus
+
       # Runs a set of commands using the runners shell
       - id: Check_Broken_VIs
         uses: LV-APT/lvCICD@main
