@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2023-10-02 22:32:37" Creator="yaoli" Comments="" ID="434effddb9271145e63f577940997c1b">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2023-10-02 22:41:28" Creator="yaoli" Comments="" ID="b90c8ad87b9390f0bbbdc1331dfbcd13">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
     <Library_Version>0.1.0.12</Library_Version>
@@ -18,7 +18,6 @@
   <Advanced_Settings>
     <Package_Dependencies>
       <Additional_External_Dependencies>nevstop_lib_communicable_state_machine &gt;=2023.10.2.123812</Additional_External_Dependencies>
-      <Package_Conflicts>nevstop_lib_csm_massdata_parameter_support &gt;=2023.10.2.222800</Package_Conflicts>
       <Package_Conflicts>nevstop_lib_jki_state_machine++ &gt;=2023.8.5.2239</Package_Conflicts>
     </Package_Dependencies>
     <Custom_Action_VIs>
