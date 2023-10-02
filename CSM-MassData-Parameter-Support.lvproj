@@ -1,6 +1,15 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
 <Project Type="Project" LVVersion="17008000">
+	<Property Name="SMProvider.SMVersion" Type="Int">201310</Property>
 	<Item Name="My Computer" Type="My Computer">
+		<Property Name="IOScan.Faults" Type="Str"></Property>
+		<Property Name="IOScan.NetVarPeriod" Type="UInt">100</Property>
+		<Property Name="IOScan.NetWatchdogEnabled" Type="Bool">false</Property>
+		<Property Name="IOScan.Period" Type="UInt">10000</Property>
+		<Property Name="IOScan.PowerupMode" Type="UInt">0</Property>
+		<Property Name="IOScan.Priority" Type="UInt">9</Property>
+		<Property Name="IOScan.ReportModeConflict" Type="Bool">true</Property>
+		<Property Name="IOScan.StartEngineOnDeploy" Type="Bool">false</Property>
 		<Property Name="server.app.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="server.control.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="server.tcp.enabled" Type="Bool">false</Property>
@@ -17,11 +26,11 @@
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
 		<Item Name="src" Type="Folder">
-			<Item Name="JKISM++ MassData Parameter Support.lvlib" Type="Library" URL="../MassData-Parameter/JKISM++ MassData Parameter Support.lvlib"/>
+			<Item Name="CSM MassData Parameter Support.lvlib" Type="Library" URL="../MassData-Parameter/CSM MassData Parameter Support.lvlib"/>
 		</Item>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="user.lib" Type="Folder">
-				<Item Name="JKI State Machine++.lvlib" Type="Library" URL="/&lt;userlib&gt;/_NEVSTOP/JKI State Machine++/JKI State Machine++.lvlib"/>
+				<Item Name="Communicable State Machine.lvlib" Type="Library" URL="/&lt;userlib&gt;/_NEVSTOP/Communicable State Machine(CSM)/Communicable State Machine.lvlib"/>
 			</Item>
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="Add State(s) to Queue__JKI_lib_State_Machine.vi" Type="VI" URL="/&lt;vilib&gt;/addons/_JKI Toolkits/State Machine/_JKI_lib_State_Machine.llb/Add State(s) to Queue__JKI_lib_State_Machine.vi"/>
@@ -64,6 +73,7 @@
 				<Item Name="Unset Busy.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/cursorutil.llb/Unset Busy.vi"/>
 				<Item Name="whitespace.ctl" Type="VI" URL="/&lt;vilib&gt;/Utility/error.llb/whitespace.ctl"/>
 			</Item>
+			<Item Name="lvanlys.dll" Type="Document" URL="/&lt;resource&gt;/lvanlys.dll"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build"/>
 	</Item>

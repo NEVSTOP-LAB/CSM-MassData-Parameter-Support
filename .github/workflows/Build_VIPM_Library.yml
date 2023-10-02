@@ -39,7 +39,7 @@ jobs:
           LabVIEW_Version: 2017
           NEVSTOP-FTP-IP: ${{ secrets.VIPM_FTP_IP }}
           NEVSTOP-FTP-PORT: ${{ secrets.VIPM_FTP_PORT }}
-          PackageName: JKI-State-Machine-Plus-Plus
+          PackageName: Communicable-State-Machine
 
       # Runs a set of commands using the runners shell
       - name: BuildDailyVIP
