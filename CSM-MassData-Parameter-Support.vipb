@@ -1,6 +1,6 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2023-09-06 22:00:11" Creator="yaoli" Comments="" ID="05a70b3efce88a3bac25b58fe958ca02">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2023-10-02 13:59:14" Creator="yaoli" Comments="" ID="5afab11c805eae6e8eed5140d2c25c9d">
   <Library_General_Settings>
-    <Package_File_Name>NEVSTOP_lib_JKISM++_MassData_Parameter_Support</Package_File_Name>
+    <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
     <Library_Version>0.1.0.12</Library_Version>
     <Auto_Increment_Version>false</Auto_Increment_Version>
     <Library_Source_Folder>.</Library_Source_Folder>
@@ -17,7 +17,8 @@
   </Library_General_Settings>
   <Advanced_Settings>
     <Package_Dependencies>
-      <Additional_External_Dependencies>nevstop_lib_jki_state_machine++ &gt;=2023.8.10.223915</Additional_External_Dependencies>
+      <Additional_External_Dependencies>nevstop_lib_communicable_state_machine &gt;=2023.10.2.123812</Additional_External_Dependencies>
+      <Package_Conflicts>nevstop_lib_jki_state_machine++ &gt;=2023.7.1.113641</Package_Conflicts>
     </Package_Dependencies>
     <Custom_Action_VIs>
       <Pre-Build_VI/>
@@ -27,7 +28,7 @@
       <Pre-Uninstall_VI/>
       <Post-Uninstall_VI/>
     </Custom_Action_VIs>
-    <VI_Package_Configuration_File>JKISM++ MassData-Parameter-Support.vipc</VI_Package_Configuration_File>
+    <VI_Package_Configuration_File>CSM-MassData-Parameter-Support.vipc</VI_Package_Configuration_File>
     <Description>
       <One_Line_Description_Summary/>
       <Description/>
@@ -40,12 +41,12 @@
       <Toolkit_VIs>
         <LLB>false</LLB>
         <Preserve_Hierarchy>true</Preserve_Hierarchy>
-        <Path>&lt;user.lib&gt;\_NEVSTOP\JKI State Machine++\addons</Path>
+        <Path>&lt;user.lib&gt;\_NEVSTOP\Communicable State Machine(CSM)\addons</Path>
       </Toolkit_VIs>
       <Examples>
         <LLB>false</LLB>
         <Preserve_Hierarchy>true</Preserve_Hierarchy>
-        <Path>&lt;application&gt;\examples\NEVSTOP\JKISM++\Addons - MassData Parameter Support</Path>
+        <Path>&lt;application&gt;\examples\NEVSTOP\Communicable State Machine(CSM)\Addons - MassData Parameter Support</Path>
       </Examples>
       <Custom_Probes>
         <LLB>false</LLB>
@@ -132,10 +133,16 @@
         <Path>.gitignore</Path>
       </Exclusions>
       <Exclusions>
-        <Path>JKISM++ MassData-Parameter-Support.lvproj</Path>
+        <Path>README.md</Path>
       </Exclusions>
       <Exclusions>
-        <Path>README.md</Path>
+        <Path>.github</Path>
+      </Exclusions>
+      <Exclusions>
+        <Path>CSM-MassData-Parameter-Support.lvproj</Path>
+      </Exclusions>
+      <Exclusions>
+        <Path>DEV ENVIRONMENT LabVIEW 2017</Path>
       </Exclusions>
       <Place_Folder_Contents>
         <Path/>
