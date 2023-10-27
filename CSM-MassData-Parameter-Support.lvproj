@@ -30,6 +30,7 @@
 		<Item Name="src" Type="Folder">
 			<Item Name="CSM MassData Parameter Support.lvlib" Type="Library" URL="../MassData-Parameter/CSM MassData Parameter Support.lvlib"/>
 		</Item>
+		<Item Name="CSM-MassData-Parameter-Support.vipb" Type="Document" URL="../CSM-MassData-Parameter-Support.vipb"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="user.lib" Type="Folder">
 				<Item Name="Communicable State Machine.lvlib" Type="Library" URL="/&lt;userlib&gt;/_NEVSTOP/Communicable State Machine(CSM)/Communicable State Machine.lvlib"/>
