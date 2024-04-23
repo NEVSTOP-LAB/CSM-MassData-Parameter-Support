@@ -9,9 +9,6 @@
 		<Item Name="FGV-MassData.vi" Type="VI" URL="../_support/FGV-MassData.vi"/>
 		<Item Name="Operation-FGV-MassData.ctl" Type="VI" URL="../_support/Operation-FGV-MassData.ctl"/>
 	</Item>
-	<Item Name="Utility" Type="Folder">
-		<Item Name="CSM - Data Type.vi" Type="VI" URL="../Utility/CSM - Data Type.vi"/>
-	</Item>
 	<Item Name="CSM - Config MassData Parameter Cache Size.vi" Type="VI" URL="../CSM - Config MassData Parameter Cache Size.vi"/>
 	<Item Name="CSM - Convert Argument to MassData.vim" Type="VI" URL="../CSM - Convert Argument to MassData.vim"/>
 	<Item Name="CSM - Convert MassData to Argument.vim" Type="VI" URL="../CSM - Convert MassData to Argument.vim"/>
