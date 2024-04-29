@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2024-04-25 21:01:16" Creator="yaoli" Comments="" ID="18ceabe3700d4e3e47eeda86312d6789">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2024-04-29 11:19:39" Creator="yaoli" Comments="" ID="7fd98b6b35a547236fc5bfbf50dcebd7">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
     <Library_Version>2024.4.0.12</Library_Version>
@@ -35,7 +35,11 @@
       <Copyright/>
       <Packager>NEVSTOP</Packager>
       <URL>https://github.com/NEVSTOP-LAB/JKISMPP-MassData-Parameter-Support</URL>
-      <Release_Notes>[update] CSM Data Type String.vi is moved into CSM Core.
+      <Release_Notes>[add] #1 add CSM - Convert MassData to Argument With DataType.vim to include data type info
+[add] #1 add CSM - MassData Data Type String.vi to read data type string in massdata
+[add] add CSM - MassData Update Status Indicator.vi in utility palette
+[update] massdata argument is starting with &lt;massdata&gt;
+[update] CSM Data Type String.vi is moved into CSM Core.
 [update] update all icons</Release_Notes>
     </Description>
     <Destinations>
