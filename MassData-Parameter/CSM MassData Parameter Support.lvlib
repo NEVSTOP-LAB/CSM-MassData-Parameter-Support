@@ -4,16 +4,16 @@
 	<Property Name="NI.Lib.SourceVersion" Type="Int">385908736</Property>
 	<Property Name="NI.Lib.Version" Type="Str">1.0.0.0</Property>
 	<Property Name="NI.LV.All.SourceOnly" Type="Bool">true</Property>
+	<Property Name="NI.SortType" Type="Int">3</Property>
 	<Item Name="_support" Type="Folder">
 		<Item Name="Def-MassDataOper-Status.ctl" Type="VI" URL="../_support/Def-MassDataOper-Status.ctl"/>
 		<Item Name="FGV-MassData.vi" Type="VI" URL="../_support/FGV-MassData.vi"/>
 		<Item Name="Operation-FGV-MassData.ctl" Type="VI" URL="../_support/Operation-FGV-MassData.ctl"/>
 	</Item>
-	<Item Name="Utility" Type="Folder">
-		<Item Name="CSM - Data Type.vi" Type="VI" URL="../Utility/CSM - Data Type.vi"/>
-	</Item>
 	<Item Name="CSM - Config MassData Parameter Cache Size.vi" Type="VI" URL="../CSM - Config MassData Parameter Cache Size.vi"/>
 	<Item Name="CSM - Convert Argument to MassData.vim" Type="VI" URL="../CSM - Convert Argument to MassData.vim"/>
 	<Item Name="CSM - Convert MassData to Argument.vim" Type="VI" URL="../CSM - Convert MassData to Argument.vim"/>
+	<Item Name="CSM - Convert MassData to Argument With DataType.vim" Type="VI" URL="../CSM - Convert MassData to Argument With DataType.vim"/>
 	<Item Name="CSM - MassData Parameter Status.vi" Type="VI" URL="../CSM - MassData Parameter Status.vi"/>
+	<Item Name="CSM - MassData Data Type String.vi" Type="VI" URL="../CSM - MassData Data Type String.vi"/>
 </Library>
