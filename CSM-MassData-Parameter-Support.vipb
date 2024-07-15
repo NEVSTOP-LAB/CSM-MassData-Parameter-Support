@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2024-07-15 10:23:34" Creator="yaoli" Comments="" ID="f116c2cfec71f2c6cfc5b167c05da68f">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2024-07-15 10:43:51" Creator="yaoli" Comments="" ID="2c4d81f74e07e66b9487b9bb90942575">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
     <Library_Version>2024.7.0.12</Library_Version>
@@ -35,7 +35,8 @@
       <Copyright/>
       <Packager>NEVSTOP</Packager>
       <URL>https://github.com/NEVSTOP-LAB/JKISMPP-MassData-Parameter-Support</URL>
-      <Release_Notes>[fix] #16 fix status display when Start:0;Length:0.
+      <Release_Notes>[update] #17 improve description on data corruption error.
+[fix] #16 fix status display when Start:0;Length:0.
 [update] #14 Include UI control in CSM - MassData Update Status Indicator.vi</Release_Notes>
     </Description>
     <Destinations>
