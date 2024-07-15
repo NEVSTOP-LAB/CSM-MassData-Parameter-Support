@@ -1,7 +1,7 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2024-05-15 18:39:52" Creator="yaoli" Comments="" ID="ee793a7109562e0596169b58ef1e0f41">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2024-07-15 10:23:34" Creator="yaoli" Comments="" ID="f116c2cfec71f2c6cfc5b167c05da68f">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
-    <Library_Version>2024.5.0.12</Library_Version>
+    <Library_Version>2024.7.0.12</Library_Version>
     <Auto_Increment_Version>false</Auto_Increment_Version>
     <Library_Source_Folder>.</Library_Source_Folder>
     <Library_Output_Folder>vip</Library_Output_Folder>
@@ -35,7 +35,8 @@
       <Copyright/>
       <Packager>NEVSTOP</Packager>
       <URL>https://github.com/NEVSTOP-LAB/JKISMPP-MassData-Parameter-Support</URL>
-      <Release_Notes>[update] #14 Include UI control in CSM - MassData Update Status Indicator.vi</Release_Notes>
+      <Release_Notes>[fix] #16 fix status display when Start:0;Length:0.
+[update] #14 Include UI control in CSM - MassData Update Status Indicator.vi</Release_Notes>
     </Description>
     <Destinations>
       <Toolkit_VIs>
@@ -212,6 +213,7 @@
       <close_labview_before_install>false</close_labview_before_install>
       <restart_labview_after_install>false</restart_labview_after_install>
       <skip_mass_compile_after_install>false</skip_mass_compile_after_install>
+      <install_into_global_environment>false</install_into_global_environment>
     </LabVIEW>
     <VI_Docs>
       <Edit_VI_Description>true</Edit_VI_Description>
