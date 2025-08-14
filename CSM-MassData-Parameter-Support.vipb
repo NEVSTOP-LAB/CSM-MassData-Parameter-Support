@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2025-08-14 18:47:30" Creator="yaoli" Comments="" ID="8637b099f1b4aaf095c2b584667b30ff">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2025-08-14 20:31:31" Creator="yaoli" Comments="" ID="b3d7726a05a2b61fbb966b083609993d">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
     <Library_Version>2025.8.0.1</Library_Version>
@@ -35,7 +35,7 @@
       <Copyright/>
       <Packager>NEVSTOP</Packager>
       <URL>https://github.com/NEVSTOP-LAB/JKISMPP-MassData-Parameter-Support</URL>
-      <Release_Notes>[example] #89 refactor example for csm-doc</Release_Notes>
+      <Release_Notes>[example] #24 refactor example for csm-doc</Release_Notes>
     </Description>
     <Destinations>
       <Toolkit_VIs>
