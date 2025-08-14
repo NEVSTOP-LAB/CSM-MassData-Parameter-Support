@@ -24,6 +24,9 @@
 		<Item Name="_test" Type="Folder" URL="../_test">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
+		<Item Name="CSM Tool" Type="Folder" URL="../CSM Tool">
+			<Property Name="NI.DISK" Type="Bool">true</Property>
+		</Item>
 		<Item Name="example" Type="Folder" URL="../example">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
