@@ -1,4 +1,4 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2025-08-14 21:26:48" Creator="yaoli" Comments="" ID="9a727b2d3acd8880a3a8e7cbd2d74510">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2025-08-17 09:39:53" Creator="yaoli" Comments="" ID="8da09af23494735eadab6e2785244926">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
     <Library_Version>2025.8.0.1</Library_Version>
@@ -36,6 +36,7 @@
       <Packager>NEVSTOP</Packager>
       <URL>https://github.com/NEVSTOP-LAB/JKISMPP-MassData-Parameter-Support</URL>
       <Release_Notes>[add] Add CSM tool: MassData Cache Status Viewer
+[add] Add a sub-palette in argument palette
 [Update] #24 Example: refactor example for csm-doc
 </Release_Notes>
     </Description>
@@ -104,6 +105,12 @@
         <Preserve_Hierarchy>true</Preserve_Hierarchy>
         <Path>&lt;user.lib&gt;\_NEVSTOP\Communicable State Machine(CSM)\_tool</Path>
       </Additional_Destination>
+      <Additional_Destination>
+        <Name>CSM-Dir</Name>
+        <LLB>false</LLB>
+        <Preserve_Hierarchy>true</Preserve_Hierarchy>
+        <Path>&lt;user.lib&gt;\_NEVSTOP\Communicable State Machine(CSM)</Path>
+      </Additional_Destination>
     </Destinations>
     <Source_Files>
       <Destination_Overrides>
@@ -119,16 +126,22 @@
         <Additional_Destination_Index>0</Additional_Destination_Index>
       </Destination_Overrides>
       <Destination_Overrides>
-        <Path>MassData-Parameter</Path>
-        <Destination>0</Destination>
-        <Additional_Destination>false</Additional_Destination>
-        <Additional_Destination_Index>0</Additional_Destination_Index>
-      </Destination_Overrides>
-      <Destination_Overrides>
         <Path>CSM Tool</Path>
         <Destination>0</Destination>
         <Additional_Destination>true</Additional_Destination>
         <Additional_Destination_Index>0</Additional_Destination_Index>
+      </Destination_Overrides>
+      <Destination_Overrides>
+        <Path>addons</Path>
+        <Destination>0</Destination>
+        <Additional_Destination>true</Additional_Destination>
+        <Additional_Destination_Index>1</Additional_Destination_Index>
+      </Destination_Overrides>
+      <Destination_Overrides>
+        <Path>Arguments</Path>
+        <Destination>0</Destination>
+        <Additional_Destination>true</Additional_Destination>
+        <Additional_Destination_Index>1</Additional_Destination_Index>
       </Destination_Overrides>
       <Password_Overrides>
         <Path>.</Path>
@@ -172,6 +185,12 @@
       </Place_Folder_Contents>
       <Place_Folder_Contents>
         <Path>CSM Tool</Path>
+      </Place_Folder_Contents>
+      <Place_Folder_Contents>
+        <Path>addons</Path>
+      </Place_Folder_Contents>
+      <Place_Folder_Contents>
+        <Path>Arguments</Path>
       </Place_Folder_Contents>
     </Source_Files>
     <License_Agreement_Filepath>LICENSE</License_Agreement_Filepath>
