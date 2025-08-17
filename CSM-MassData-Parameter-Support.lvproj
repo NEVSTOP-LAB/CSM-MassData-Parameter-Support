@@ -24,17 +24,17 @@
 		<Item Name="_test" Type="Folder" URL="../_test">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
+		<Item Name="addons" Type="Folder" URL="../addons">
+			<Property Name="NI.DISK" Type="Bool">true</Property>
+		</Item>
+		<Item Name="Arguments" Type="Folder" URL="../Arguments">
+			<Property Name="NI.DISK" Type="Bool">true</Property>
+		</Item>
 		<Item Name="CSM Tool" Type="Folder" URL="../CSM Tool">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
 		<Item Name="example" Type="Folder" URL="../example">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
-		</Item>
-		<Item Name="src" Type="Folder">
-			<Item Name="Utility" Type="Folder" URL="../MassData-Parameter/Utility">
-				<Property Name="NI.DISK" Type="Bool">true</Property>
-			</Item>
-			<Item Name="CSM MassData Parameter Support.lvlib" Type="Library" URL="../MassData-Parameter/CSM MassData Parameter Support.lvlib"/>
 		</Item>
 		<Item Name="CSM-MassData-Parameter-Support.vipb" Type="Document" URL="../CSM-MassData-Parameter-Support.vipb"/>
 		<Item Name="Dependencies" Type="Dependencies">
