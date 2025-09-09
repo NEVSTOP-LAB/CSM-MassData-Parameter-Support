@@ -8,6 +8,7 @@
 	<Item Name="_support" Type="Folder">
 		<Item Name="Def-MassDataOper-Status.ctl" Type="VI" URL="../_support/Def-MassDataOper-Status.ctl"/>
 		<Item Name="FGV-MassData.vi" Type="VI" URL="../_support/FGV-MassData.vi"/>
+		<Item Name="FGV-MassData(lvlibp).vi" Type="VI" URL="../_support/FGV-MassData(lvlibp).vi"/>
 		<Item Name="Operation-FGV-MassData.ctl" Type="VI" URL="../_support/Operation-FGV-MassData.ctl"/>
 	</Item>
 	<Item Name="CSM - Config MassData Parameter Cache Size.vi" Type="VI" URL="../CSM - Config MassData Parameter Cache Size.vi"/>
