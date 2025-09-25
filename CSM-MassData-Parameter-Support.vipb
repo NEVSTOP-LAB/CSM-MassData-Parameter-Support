@@ -1,7 +1,7 @@
-<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2025-08-17 10:15:42" Creator="yaoli" Comments="" ID="a704a39c8febe295921fd33366ebf942">
+<VI_Package_Builder_Settings Version="2020.1" Created_Date="2023-08-12 17:59:50" Modified_Date="2025-09-13 23:36:01" Creator="yaoli" Comments="" ID="384ae44b767faf0dd6c578d5acb473d9">
   <Library_General_Settings>
     <Package_File_Name>NEVSTOP_lib_CSM_MassData_Parameter_Support</Package_File_Name>
-    <Library_Version>2025.8.0.1</Library_Version>
+    <Library_Version>2025.9.0.1</Library_Version>
     <Auto_Increment_Version>false</Auto_Increment_Version>
     <Library_Source_Folder>.</Library_Source_Folder>
     <Library_Output_Folder>vip</Library_Output_Folder>
@@ -17,7 +17,7 @@
   </Library_General_Settings>
   <Advanced_Settings>
     <Package_Dependencies>
-      <Additional_External_Dependencies>nevstop_lib_communicable_state_machine &gt;=2025.7.30.163451</Additional_External_Dependencies>
+      <Additional_External_Dependencies>nevstop_lib_communicable_state_machine &gt;=2025.9.13.224959</Additional_External_Dependencies>
       <Package_Conflicts>nevstop_lib_jki_state_machine++ &gt;=2023.8.5.2239</Package_Conflicts>
     </Package_Dependencies>
     <Custom_Action_VIs>
@@ -31,14 +31,37 @@
     <VI_Package_Configuration_File>CSM-MassData-Parameter-Support.vipc</VI_Package_Configuration_File>
     <Description>
       <One_Line_Description_Summary>MassData Arguments Support for Communicable State Machine(CSM)</One_Line_Description_Summary>
-      <Description>Addon for Mass Data Argument support of CSM. Data will be stored in a FGV ring buffer and the address will be passed as argument.</Description>
+      <Description>## Overview
+
+CSM-MassData-Parameter-Support is an addon for the Communicable State Machine (CSM) framework that enables efficient transfer of large data sets between CSM modules. It addresses the limitations of API String for transferring large data by using a memory-efficient mechanism to reference rather than directly encode large data structures.
+
+## Why MassData Support?
+
+In LabVIEW test and measurement applications, handling large data types such as waveforms, 1D/2D arrays is common, especially with high sampling rates and multi-channel systems. Transferring such large data using traditional API String methods would be inefficient due to:
+
+- Increased memory overhead from plaintext encoding
+- Performance issues with encoding/decoding large data
+- Reduced readability in debug logs due to excessive text
+
+## Key Benefits
+
+1. **Efficient Transmission**: Transfers only a compact reference string instead of the entire data set, avoiding memory copies
+2. **Memory Optimization**: Large data is stored in a single location regardless of the number of receivers
+3. **Improved Readability**: Compact reference strings are easier to display in CSM Log controls without consuming excessive space
+
+## Data Lifecycle
+
+- MassData Support uses a circular buffer mechanism internally
+- When the buffer is full, new data will overwrite old data from the beginning
+- Once overwritten, the original data can no longer be recovered, and decoding will fail
+- All CSM modules within the same application share the same MassData buffer space
+
+</Description>
       <Copyright/>
       <Packager>NEVSTOP</Packager>
       <URL>https://github.com/NEVSTOP-LAB/JKISMPP-MassData-Parameter-Support</URL>
-      <Release_Notes>[add] Add CSM tool: MassData Cache Status Viewer
-[add] Add a sub-palette in argument palette
-[Update] #24 Example: refactor example for csm-doc
-</Release_Notes>
+      <Release_Notes>[feature] #26 MassData now could be used with lvlibp
+[Update] doc update</Release_Notes>
     </Description>
     <Destinations>
       <Toolkit_VIs>
