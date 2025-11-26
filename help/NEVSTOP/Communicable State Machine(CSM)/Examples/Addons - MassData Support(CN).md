@@ -47,19 +47,14 @@ Massdata 使用一个后台环形队列来缓存数据，队列的大小可以�
 
 #### Introduction
 
-
+massdata 提供了一个帮助函数 CSM - MassData Update Status Indicator.vi，用于查看massdata缓存状态。本范例展示了如何使用这个函数。
 
 #### Steps
 
-- Step1: I32数组数据, 此部分选择的打包函数为`CSM - Convert MassData to Argument With DataType.vim`，因此包含DataType部分。
-    - step1.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
-    - step1.2: 调用`CSM - Convert MassData to Argument With DataType.vim`，将原始数据转换为massdata 参数。可以在前面板查看转换后的参数格式。
-    - step1.3: 使用CSM - MassData Data Type String.vi 获取MassData 参数字符串中的数据类型
-    - step1.4: 使用CSM - Argument Type.vi 获取CSM参数标签，在这里是 <massdata>
-    - step1.5: 将 CSM massdata 参数转换回原始数据，可以在前面板查看转换后的数据，应该与原始数据完全匹配
-
-- Step2: 波形数据, 此部分选择的打包函数为`CSM - Convert MassData to Argument.vim`，因此不包含DataType部分。
-    - step2.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
-    - step2.2: 调用`CSM - Convert MassData to Argument.vim`，将原始数据转换为massdata 参数。可以在前面板查看转换后的参数格式，选择这个打包函数，不包含DataType部分。
-    - step2.3: 使用CSM - Argument Type.vi 获取CSM参数标签，在这里是 <massdata>
-    - step2.4: 将 CSM massdata 参数转换回原始数据，可以在前面板查看转换后的数据，应该与原始数据完全匹配
+- step1: 使用 CSM - Config MassData Parameter Cache Size.vi 设置缓存大小，可以在界面直观的看到这个设置是生效的
+- step2: 每次循环中，构造一组新的数据
+- step3: 使用 CSM massdata 的API对数据进行打包解包，模拟实际程序中的使用情况
+- step4: 使用 CSM - MassData Update Status Indicator.vi 更新垂直方向的UI界面缓存状态控件刷新
+- step5: 使用 CSM - MassData Update Status Indicator.vi 更新水平方向的UI界面缓存状态控件刷新
+- Step6：循环间隔，每个循环会重复 step3~step4
+- Step7：(optional) 可以通过本插件提供的 CSM-Tool 更加快捷的查看massdata缓存状态
