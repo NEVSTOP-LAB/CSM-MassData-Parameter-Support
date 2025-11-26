@@ -59,7 +59,6 @@ massdata 提供了一个帮助函数 CSM - MassData Update Status Indicator.vi�
 - Step6：循环间隔，每个循环会重复 step3~step4
 - Step7：(optional) 可以通过本插件提供的 CSM-Tool 更加快捷的查看massdata缓存状态
 
-
 ## 在非CSM框架中使用MassData(3. MassData in Non-CSM Framework.vi)
 
 ### Overview
@@ -81,3 +80,29 @@ Massdata 也可以在非CSM框架中使用。本范例用于展示如何在非CS
     - step3.1: 从队列中接收massdata 参数
     - step3.2: 调用 CSM - Convert Argument to MassData.vim 将massdata 参数转换为原始数据
     - step3.3: (optional) 使用 CSM - MassData Update Status Indicator.vi 更新UI界面缓存状态控件刷新
+
+
+## 在CSM框架中使用MassData(4. MassData in CSM.vi)
+
+### Overview
+
+Massdata 当然可以在CSM框架中使用。本范例用于展示如何在CSM框架中使用massdata。
+
+#### Introduction
+
+本范例展示了如何在CSM框架中使用massdata。通过一个生产者消费者的场景，展示了如何在CSM框架中使用massdata。
+
+使用一个非CSM循环生成数据生产者负责生产数据，将数据打包为massdata 参数，并通过同步消息发送给作为数据消费者的CSM模块。本范例展示了这个过程。
+
+#### Steps
+
+- step1: 使用 CSM - Config MassData Parameter Cache Size.vi 设置缓存大小
+- step2: 数据生产者循环，这个循环不是CSM模块。
+    - step2.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况, 调用 CSM - Convert MassData to Argument.vim 将原始数据转换为massdata 参数
+    - step2.2: 使用 CSM - Wait and Send Message for Reply.vi 将数据作为 API: Update Waveform 的参数，发送给CSM模块，并标记发送者为 Producer
+    - step2.3: 在 Generate 按钮为按下状态时，才发送数据
+    - step2.4: (optional) 使用 CSM - MassData Update Status Indicator.vi 更新UI界面缓存状态控件刷新
+- step3: 数据消费者循环，这个循环是CSM模块，名称为"CSM"
+    - step3.1: 在 API: Update Waveform 分支中，将收到的参数使用 CSM - Convert Argument to MassData.vim 将massdata 参数转换为原始数据并显示
+    - step3.3: (optional) 其他分支和 template 一致，没有修改
+- step4: 程序退出过程中，使用 CSM - Wait and Send Message for Reply.vi 发送同步消息“Macro: Exit” 给 CSM 模块，使CSM模块退出。
