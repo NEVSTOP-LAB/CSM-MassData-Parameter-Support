@@ -36,6 +36,9 @@
 		<Item Name="example" Type="Folder" URL="../example">
 			<Property Name="NI.DISK" Type="Bool">true</Property>
 		</Item>
+		<Item Name="help" Type="Folder" URL="../help">
+			<Property Name="NI.DISK" Type="Bool">true</Property>
+		</Item>
 		<Item Name="CSM-MassData-Parameter-Support.vipb" Type="Document" URL="../CSM-MassData-Parameter-Support.vipb"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="user.lib" Type="Folder">

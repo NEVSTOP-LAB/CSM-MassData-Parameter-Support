@@ -1,523 +1,65 @@
-# CSM Advance Example Description
+# CSM MassData Support Addon    
 
-## Addons - API String Arguments Support
+## MassData参数格式 (1. MassData Argument Format.vi)
 
-### Using within CSM - Get Module Configuration.vi
+### Overview
 
-#### Overview
+Massdata 参数用于在 CSM 框架中传递大量数据，例如：数组、波形数据等。也用于无损的传递复杂数据类型数据等场景。本范例用于展示CSM API参数中支持的MassData参数格式。
+
+#### Introduction
+
+本范例中模拟产生了两组数据：一组是I32数组数据，一组是波形数据，并将这两组数据转换为massdata 参数。
+
+CSM的参数中支持的MassData参数格式如下：
+
+```
+<MassData>Start:8057;Size:4004;DataType:1D I32
+```
+
+每个部分的含义如下：
+
+- <massdata>: 表示这是一个 MassData 参数。
+- Start：MassData 数据在内存中的起始地址。
+- Size：MassData 数据的大小（字节数）。
+- DataType：(optional) MassData 数据的类型, 选择的打包函数不同，可以不包含该部分。
+
+#### Steps
+
+- Step1: I32数组数据, 此部分选择的打包函数为`CSM - Convert MassData to Argument With DataType.vim`，因此包含DataType部分。
+    - step1.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
+    - step1.2: 调用`CSM - Convert MassData to Argument With DataType.vim`，将原始数据转换为massdata 参数。可以在前面板查看转换后的参数格式。
+    - step1.3: 使用CSM - MassData Data Type String.vi 获取MassData 参数字符串中的数据类型
+    - step1.4: 使用CSM - Argument Type.vi 获取CSM参数标签，在这里是 <massdata>
+    - step1.5: 将 CSM massdata 参数转换回原始数据，可以在前面板查看转换后的数据，应该与原始数据完全匹配
+
+- Step2: 波形数据, 此部分选择的打包函数为`CSM - Convert MassData to Argument.vim`，因此不包含DataType部分。
+    - step2.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
+    - step2.2: 调用`CSM - Convert MassData to Argument.vim`，将原始数据转换为massdata 参数。可以在前面板查看转换后的参数格式，选择这个打包函数，不包含DataType部分。
+    - step2.3: 使用CSM - Argument Type.vi 获取CSM参数标签，在这里是 <massdata>
+    - step2.4: 将 CSM massdata 参数转换回原始数据，可以在前面板查看转换后的数据，应该与原始数据完全匹配
 
 
+## 查看massdata缓存状态 (2. Show MassData Cache Status in FP.vi)
 
+### Overview
 
+Massdata 使用一个后台环形队列来缓存数据，队列的大小可以在CSM API参数中配置。本范例用于展示如何查看massdata缓存状态。
 
 #### Introduction
 
 
 
-
-
 #### Steps
 
-
-
-
-
-### CSM API String to Typical data types.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Typical data types to CSM API String.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Incorrect usage collections.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to Float.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String (Float with Unit) to Float.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to Complex Numeric.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to TimeStamp.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to Enum(special format).vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to Array.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### 1D-Cluster to CSM API String.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### 2D-Cluster to CSM API String.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Cluster to CSM API String.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to Cluster.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### CSM API String to Cluster with 2D Array elements.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-## Addons - MassData Parameter Support
-
-### MassData Argument Format.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Show MassData Cache Status in FP.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### MassData in Non-CSM Framework.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### MassData in CSM.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-## Addons - INI Static Variable Support
-
-### Used as parameters parsed by CSM.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Load the corresponding configuration by providing the prototype.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### In CSM API parameters.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Multi-file configuration systemvi.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Write and Read Configuration.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### import Config.ini with __include section.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
-
-
-
-
-
-### Read Nested Variables.vi
-
-#### Overview
-
-
-
-
-
-#### Introduction
-
-
-
-
-
-#### Steps
+- Step1: I32数组数据, 此部分选择的打包函数为`CSM - Convert MassData to Argument With DataType.vim`，因此包含DataType部分。
+    - step1.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
+    - step1.2: 调用`CSM - Convert MassData to Argument With DataType.vim`，将原始数据转换为massdata 参数。可以在前面板查看转换后的参数格式。
+    - step1.3: 使用CSM - MassData Data Type String.vi 获取MassData 参数字符串中的数据类型
+    - step1.4: 使用CSM - Argument Type.vi 获取CSM参数标签，在这里是 <massdata>
+    - step1.5: 将 CSM massdata 参数转换回原始数据，可以在前面板查看转换后的数据，应该与原始数据完全匹配
+
+- Step2: 波形数据, 此部分选择的打包函数为`CSM - Convert MassData to Argument.vim`，因此不包含DataType部分。
+    - step2.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
+    - step2.2: 调用`CSM - Convert MassData to Argument.vim`，将原始数据转换为massdata 参数。可以在前面板查看转换后的参数格式，选择这个打包函数，不包含DataType部分。
+    - step2.3: 使用CSM - Argument Type.vi 获取CSM参数标签，在这里是 <massdata>
+    - step2.4: 将 CSM massdata 参数转换回原始数据，可以在前面板查看转换后的数据，应该与原始数据完全匹配
