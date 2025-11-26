@@ -58,3 +58,26 @@ massdata 提供了一个帮助函数 CSM - MassData Update Status Indicator.vi�
 - step5: 使用 CSM - MassData Update Status Indicator.vi 更新水平方向的UI界面缓存状态控件刷新
 - Step6：循环间隔，每个循环会重复 step3~step4
 - Step7：(optional) 可以通过本插件提供的 CSM-Tool 更加快捷的查看massdata缓存状态
+
+
+## 在非CSM框架中使用MassData(3. MassData in Non-CSM Framework.vi)
+
+### Overview
+
+Massdata 也可以在非CSM框架中使用。本范例用于展示如何在非CSM框架中使用massdata。
+
+#### Introduction
+
+通过一个生产者消费者框架的范例，展示了如何在非CSM框架中使用massdata。数据生产者负责生产数据，将数据打包为massdata 参数，并通过队列传输给数据消费者，数据消费者负责消费数据，将massdata格式的数据解包为原始数据，并进行处理。本范例展示了这个过程。
+
+#### Steps
+
+- step1: 使用 CSM - Config MassData Parameter Cache Size.vi 设置缓存大小
+- step2: 数据生产者循环
+    - step2.1: 构造原始数据，在实际程序中来源与硬件采集、数据接收等情况
+    - step2.2: 调用 CSM - Convert MassData to Argument.vim 将原始数据转换为massdata 参数
+    - step2.3: 将转换后的massdata 参数通过队列传输给数据消费者
+- step3: 数据消费者循环
+    - step3.1: 从队列中接收massdata 参数
+    - step3.2: 调用 CSM - Convert Argument to MassData.vim 将massdata 参数转换为原始数据
+    - step3.3: (optional) 使用 CSM - MassData Update Status Indicator.vi 更新UI界面缓存状态控件刷新
