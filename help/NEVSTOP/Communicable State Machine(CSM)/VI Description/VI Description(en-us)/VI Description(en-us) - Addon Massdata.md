@@ -22,14 +22,14 @@
 > - `DataType(optional)`: The type of the data, defined by the CSM Data Type String VI.
 
 ### CSM - Config MassData Parameter Cache Size.vi
-Configures the Massdata background cache size. The default value is 1 MB.
+Configures the Massdata background cache size. The default value is 50 MB.
 
 It is recommended to configure an appropriate cache size that is not too large to avoid wasting memory and not too small to prevent frequent overwrites. You can use the provided debugging tools to monitor cache usage and determine the optimal configuration.
 
 > - Ref: CSM Massdata Argument Support
 
 -- <b>Controls</b> --
-- <b>Size (1M)</b>: Cache size in bytes. The default is 1 MB.
+- <b>Size (50M)</b>: Cache size in bytes. The default is 1 MB.
 
 ### CSM - Convert Argument to MassData.vim
 Converts a Massdata argument back to raw data.
