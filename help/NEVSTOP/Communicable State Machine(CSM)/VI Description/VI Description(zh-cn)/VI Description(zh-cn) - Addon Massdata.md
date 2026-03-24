@@ -20,14 +20,19 @@
 > - `DataType(optional)`: 数据的类型，由CSM Data Type String VI定义
 
 ### CSM - Config MassData Parameter Cache Size.vi
-配置Massdata后台缓存大小，默认值为1 MB。
+配置Massdata后台缓存大小，默认值为50 MB。
 
 建议配置适当的缓存大小: 不要太大(避免浪费内存)，也不要太小(防止频繁覆盖)。可以利用提供的调试工具监控缓存使用情况，确定最佳配置。
 
+> [!WARNING]
+> 建议不要在运行过程中调整缓存大小，调整缓存会重新分配内存，正在运行中的数据会丢失。
+> 推荐在应用程序启动前就配置缓存大小，确保缓存大小符合应用需求。
+
 > - Ref: CSM Massdata参数支持
 
+
 -- <b>输入控件(Controls)</b> --
-- <b>Size (1M)</b>: 缓存大小，单位为字节(Byte)。
+- <b>Size (50M)</b>: 缓存大小，单位为字节(Byte)。
 
 ### CSM - Convert Argument to MassData.vim
 将Massdata参数转换为原始数据。
