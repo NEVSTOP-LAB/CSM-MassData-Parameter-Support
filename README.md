@@ -8,64 +8,65 @@
 
 ## Overview
 
-CSM-MassData-Parameter-Support is an addon for the Communicable State Machine (CSM) framework that enables efficient transfer of large data sets between CSM modules. It addresses the limitations of API String for transferring large data by using a memory-efficient mechanism to reference rather than directly encode large data structures.
+CSM-MassData-Parameter-Support is an add-on for the Communicable State Machine (CSM) framework that enables efficient transfer of large datasets between CSM modules. Instead of encoding large data directly into the API string, it uses a reference mechanism to pass data by reference, overcoming the limitations of API strings for large data transfer.
 
 ## Why MassData Support?
 
-In LabVIEW test and measurement applications, handling large data types such as waveforms, 1D/2D arrays is common, especially with high sampling rates and multi-channel systems. Transferring such large data using traditional API String methods would be inefficient due to:
+In LabVIEW test and measurement applications, handling large data types such as waveforms and 1D/2D arrays is common, especially in high-sampling-rate and multi-channel systems. Transferring such data using traditional API string encoding is inefficient due to:
 
-- Increased memory overhead from plaintext encoding
-- Performance issues with encoding/decoding large data
-- Reduced readability in debug logs due to excessive text
+- Extra memory overhead from plaintext encoding
+- Performance cost of encoding/decoding large data
+- Excessive log noise that degrades debug readability
 
 ## How It Works
 
-MassData Support operates on a simple but effective principle:
+MassData Support is based on the following principle:
 
-1. **Encoding**: Converts large data into a reference string ("address") instead of directly encoding the data itself
-2. **Transmission**: Sends this compact reference string through CSM's "invisible bus"
-3. **Decoding**: The receiving CSM module uses the reference string to retrieve the original large data
+1. **Encode**: Convert large data into a compact reference string ("address") instead of encoding the data inline
+2. **Transmit**: Send the reference string through CSM's invisible bus
+3. **Decode**: The receiving CSM module uses the reference string to retrieve the original data
 
-The encoded result is a string containing three parts: "flag", "start position", and "size", which act as a "door number" to locate the actual data stored in a dedicated memory space.
+The reference string contains three fields — `flag`, `start position`, and `size` — which together act as a locator for the actual data stored in a shared memory buffer.
 
 ## Key Benefits
 
-1. **Efficient Transmission**: Transfers only a compact reference string instead of the entire data set, avoiding memory copies
-2. **Memory Optimization**: Large data is stored in a single location regardless of the number of receivers
-3. **Improved Readability**: Compact reference strings are easier to display in CSM Log controls without consuming excessive space
+1. **Efficient Transmission**: Only a compact reference string is transferred, avoiding full data copies
+2. **Memory Efficient**: Large data is stored once regardless of the number of receivers
+3. **Cleaner Logs**: Compact reference strings keep CSM log output concise and readable
 
 ## Data Lifecycle
 
-- MassData Support uses a circular buffer mechanism internally
-- When the buffer is full, new data will overwrite old data from the beginning
-- Once overwritten, the original data can no longer be recovered, and decoding will fail
-- All CSM modules within the same application share the same MassData buffer space
+- MassData uses a circular buffer internally
+- When the buffer is full, new data overwrites old data from the beginning
+- Overwritten data cannot be recovered; decoding will fail
+- All CSM modules in the same application share the same MassData buffer
 
 ## Best Practices
 
-1. **Avoid Infinite Lifecycle Data**: Do not use MassData to store data that needs to persist indefinitely
-2. **Configure Appropriate Cache Size**: Use the "Config MassData Parameter Cache Size.vi" to set an optimal buffer size
-   - Not too large (to avoid wasting memory)
-   - Not too small (to prevent frequent overwriting)
-3. **Use Debugging Tools**: Utilize the provided debugging tools to monitor cache usage and determine the optimal configuration
+1. **Avoid Long-Lived Data**: Do not use MassData for data that must persist indefinitely
+2. **Set an Appropriate Cache Size**: Use `Config MassData Parameter Cache Size.vi` to configure the buffer size
+   - Too large wastes memory
+   - Too small causes frequent overwrites
+3. **Monitor Cache Usage**: Use the provided debugging tools to observe cache usage and tune the configuration
 
 ## Installation
 
-Install the addon via VIPM (VI Package Manager). After installation, you can find it in the CSM addons palette.
+Install via VIPM (VI Package Manager). After installation, find it in the CSM add-ons palette.
 
 ## Usage
 
 1. Use encoding VIs to convert large data into MassData arguments
-2. Transfer these arguments between CSM modules via CSM's parameter passing mechanism
-3. Use decoding VIs on the receiving end to retrieve the original large data
+2. Pass these arguments between CSM modules via CSM's parameter passing mechanism
+3. Use decoding VIs at the receiving end to retrieve the original data
 
 ## Examples
 
-Check the example folder for demonstrations of:
+See the example folder for demonstrations of:
+
 1. MassData argument format
 2. Displaying MassData cache status on the front panel
 3. Using MassData in non-CSM frameworks
-4. Integrating MassData with CSM
+4. Using MassData with CSM
 
 ## Development Environment
 
@@ -73,5 +74,5 @@ LabVIEW 2017 or later
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details
+This project is licensed under the MIT License — see the LICENSE file for details.
 
