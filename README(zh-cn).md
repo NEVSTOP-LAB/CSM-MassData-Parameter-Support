@@ -72,6 +72,12 @@ MassData Support 基于以下简单而有效的原理：
 
 LabVIEW 2017 或更高版本
 
+## 第三方语言绑定
+
+[`c/`](./c) 目录提供 MassData API 的 **C 语言移植**，函数名称、参数及参考
+字符串格式与 LabVIEW VI 完全一致，并附带 Visual Studio 2022 测试工程
+[`c/vs_test`](./c/vs_test)。
+
 ## 许可证
 
 本项目基于 MIT 许可证 — 详见 LICENSE 文件

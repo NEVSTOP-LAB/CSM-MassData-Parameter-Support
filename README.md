@@ -72,6 +72,13 @@ See the example folder for demonstrations of:
 
 LabVIEW 2017 or later
 
+## Third-party language bindings
+
+A C-language port of the MassData API (function names, parameters and
+reference-string format identical to the LabVIEW VIs) is available under
+[`c/`](./c). It ships with a Visual Studio 2022 test project at
+[`c/vs_test`](./c/vs_test).
+
 ## License
 
 This project is licensed under the MIT License — see the LICENSE file for details.
