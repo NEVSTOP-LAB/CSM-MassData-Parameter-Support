@@ -27,8 +27,11 @@
  * 共享同一份 MassData 缓冲区。
  *
  * @par 线程安全
- * 本头文件中所有公开函数均为线程安全。多个线程的并发调用
- * 会通过内部互斥量串行化执行。
+ * 在内部状态完成初始化后，公开函数的并发调用会通过内部互斥量
+ * 串行化执行。延迟初始化通过平台原语（Windows: @c InitOnceExecuteOnce，
+ * POSIX: @c pthread_once）保证仅执行一次，即使多个线程并发首次调用
+ * 也不会产生竞态。建议在进入多线程阶段前主动调用
+ * CSM_ConfigMassDataParameterCacheSize() 完成初始化，以获得最佳性能。
  *
  * @copyright MIT 许可证 — 详见仓库根目录的 LICENSE 文件。
  */

@@ -11,7 +11,9 @@
 
 #include "csm_massdata.h"
 
+#include <errno.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,12 +25,14 @@ typedef CRITICAL_SECTION csm_mutex_t;
 #  define CSM_MUTEX_INIT(m)    InitializeCriticalSection(m)
 #  define CSM_MUTEX_LOCK(m)    EnterCriticalSection(m)
 #  define CSM_MUTEX_UNLOCK(m)  LeaveCriticalSection(m)
+static INIT_ONCE g_init_once = INIT_ONCE_STATIC_INIT;
 #else
 #  include <pthread.h>
 typedef pthread_mutex_t csm_mutex_t;
 #  define CSM_MUTEX_INIT(m)    pthread_mutex_init((m), NULL)
 #  define CSM_MUTEX_LOCK(m)    pthread_mutex_lock(m)
 #  define CSM_MUTEX_UNLOCK(m)  pthread_mutex_unlock(m)
+static pthread_once_t g_once = PTHREAD_ONCE_INIT;
 #endif
 
 /* ------------------------------------------------------------------------- */
@@ -49,23 +53,39 @@ typedef struct csm_massdata_state_s {
 
 static csm_massdata_state_t g_state;
 
+#if defined(_WIN32)
+static BOOL CALLBACK csm_massdata_do_init(PINIT_ONCE io, PVOID p, PVOID *ctx)
+{
+    (void)io; (void)p; (void)ctx;
+    g_state.buffer      = (uint8_t *)malloc(CSM_MASSDATA_DEFAULT_CACHE_SIZE);
+    g_state.capacity    = (g_state.buffer != NULL) ? CSM_MASSDATA_DEFAULT_CACHE_SIZE : 0u;
+    g_state.write_total = 0u;
+    memset(&g_state.last_read,  0, sizeof(g_state.last_read));
+    memset(&g_state.last_write, 0, sizeof(g_state.last_write));
+    CSM_MUTEX_INIT(&g_state.mutex);
+    g_state.initialized = 1;
+    return TRUE;
+}
 static void csm_massdata_lazy_init(void)
 {
-    if (g_state.initialized) {
-        return;
-    }
-    /* 第一次调用本模块的 API 时负责分配默认缓冲区。
-     * 一旦初始化完成，该标志将由互斥量保护；但首次分配本身
-     * 在多线程程序中存在竞态，因此关心线程安全的调用方应当
-     * 在程序启动时主动调用 CSM_ConfigMassDataParameterCacheSize()。 */
-    g_state.buffer = (uint8_t *)malloc(CSM_MASSDATA_DEFAULT_CACHE_SIZE);
-    g_state.capacity = (g_state.buffer != NULL) ? CSM_MASSDATA_DEFAULT_CACHE_SIZE : 0u;
+    InitOnceExecuteOnce(&g_init_once, csm_massdata_do_init, NULL, NULL);
+}
+#else
+static void csm_massdata_do_init(void)
+{
+    g_state.buffer      = (uint8_t *)malloc(CSM_MASSDATA_DEFAULT_CACHE_SIZE);
+    g_state.capacity    = (g_state.buffer != NULL) ? CSM_MASSDATA_DEFAULT_CACHE_SIZE : 0u;
     g_state.write_total = 0u;
     memset(&g_state.last_read,  0, sizeof(g_state.last_read));
     memset(&g_state.last_write, 0, sizeof(g_state.last_write));
     CSM_MUTEX_INIT(&g_state.mutex);
     g_state.initialized = 1;
 }
+static void csm_massdata_lazy_init(void)
+{
+    pthread_once(&g_once, csm_massdata_do_init);
+}
+#endif
 
 /* ------------------------------------------------------------------------- */
 /*  内部辅助函数                                                             */
@@ -113,8 +133,9 @@ static csm_massdata_status_t csm_massdata_parse(const char *argument,
         return CSM_MASSDATA_ERR_PARSE;
     }
     p += 6;
+    errno = 0;
     tmp = strtoull(p, &end, 10);
-    if (end == p || *end != ';') {
+    if (end == p || *end != ';' || errno != 0) {
         return CSM_MASSDATA_ERR_PARSE;
     }
     *start_out = (uint64_t)tmp;
@@ -124,8 +145,9 @@ static csm_massdata_status_t csm_massdata_parse(const char *argument,
         return CSM_MASSDATA_ERR_PARSE;
     }
     p += 5;
+    errno = 0;
     tmp = strtoull(p, &end, 10);
-    if (end == p) {
+    if (end == p || errno != 0) {
         return CSM_MASSDATA_ERR_PARSE;
     }
     *size_out = (uint64_t)tmp;
@@ -146,6 +168,16 @@ static csm_massdata_status_t csm_massdata_parse(const char *argument,
         return CSM_MASSDATA_ERR_PARSE;
     }
     p += 9;
+    /* 验证 DataType 值仅包含合法字符，且字符串以 NUL 结尾。 */
+    {
+        const char *q = p;
+        while (*q && *q != ';' && *q != '<' && *q != '>') {
+            q++;
+        }
+        if (*q != '\0') {
+            return CSM_MASSDATA_ERR_PARSE;
+        }
+    }
     if (data_type != NULL && data_type_cap > 0u) {
         size_t len = strlen(p);
         if (len + 1u > data_type_cap) {
@@ -326,11 +358,14 @@ csm_massdata_status_t CSM_ConvertArgumentToMassData(const char *argument,
 
     csm_massdata_lazy_init();
 
-    *data_size_out = (size_t)size;
-
+    /* 在 32 位平台上 size_t 可能小于 uint64_t，需先验证。 */
+    if (size > (uint64_t)SIZE_MAX) {
+        return CSM_MASSDATA_ERR_PARSE;
+    }
     if (size > 0u && data == NULL) {
         return CSM_MASSDATA_ERR_INVALID_ARG;
     }
+    *data_size_out = (size_t)size;
     if (size > (uint64_t)data_cap) {
         return CSM_MASSDATA_ERR_BUFFER_TOO_SMALL;
     }
@@ -348,11 +383,22 @@ csm_massdata_status_t CSM_ConvertArgumentToMassData(const char *argument,
      * [write_total - capacity, write_total)。任何末端落在该窗口
      * 之外的请求都视为已被覆盖。 */
     {
-        uint64_t end = start + size;
         uint64_t oldest = (g_state.write_total > (uint64_t)g_state.capacity)
                           ? g_state.write_total - (uint64_t)g_state.capacity
                           : 0u;
-        if (start < oldest || end > g_state.write_total) {
+        uint64_t end;
+
+        if (size > 0u && start > UINT64_MAX - size) {
+            CSM_MUTEX_UNLOCK(&g_state.mutex);
+            return CSM_MASSDATA_ERR_OVERWRITTEN;
+        }
+        if (start < oldest || start > g_state.write_total) {
+            CSM_MUTEX_UNLOCK(&g_state.mutex);
+            return CSM_MASSDATA_ERR_OVERWRITTEN;
+        }
+
+        end = start + size;
+        if (end > g_state.write_total) {
             CSM_MUTEX_UNLOCK(&g_state.mutex);
             return CSM_MASSDATA_ERR_OVERWRITTEN;
         }
