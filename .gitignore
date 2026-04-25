@@ -16,3 +16,14 @@ c/**/*.pdb
 c/**/*.ilk
 c/**/*.idb
 c/**/*.tlog
+
+# C# / .NET / Visual Studio build artefacts (under csharp/)
+csharp/**/bin/
+csharp/**/obj/
+csharp/**/Debug/
+csharp/**/Release/
+csharp/**/x64/
+csharp/**/x86/
+csharp/**/.vs/
+csharp/**/*.user
+csharp/**/*.suo

@@ -18,6 +18,7 @@ on:
       - '**.json'
       - '**.yml'
       - 'c/**'
+      - 'csharp/**'
 
   push:
     paths-ignore:
@@ -29,6 +30,7 @@ on:
       - '**.json'
       - '**.yml'
       - 'c/**'
+      - 'csharp/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
