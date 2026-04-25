@@ -63,6 +63,8 @@ public static class CsmMassData
 
     private static readonly object SyncRoot = new();
 
+    private static readonly char[] ForbiddenDataTypeChars = { ';', '<', '>' };
+
     private static byte[] s_buffer = AllocateInitialBuffer();
     private static int s_capacity = s_buffer.Length;
     private static ulong s_writeTotal;
@@ -124,7 +126,7 @@ public static class CsmMassData
     /// 并返回形如 <c>&lt;MassData&gt;Start:&lt;N&gt;;Size:&lt;N&gt;</c>
     /// 的引用字符串。
     /// </remarks>
-    /// <param name="data">待保存的原始字节，<c>null</c> 视为空数据。</param>
+    /// <param name="data">待保存的原始字节，空 Span 等价于不写入任何数据。</param>
     /// <returns>MassData 参数字符串。</returns>
     /// <exception cref="CsmMassDataException">编码过程中检测到错误时抛出。</exception>
     public static string ConvertMassDataToArgument(ReadOnlySpan<byte> data)
@@ -133,7 +135,7 @@ public static class CsmMassData
     /// <summary>
     /// 将原始数据转换为 MassData 参数（不嵌入数据类型）。
     /// </summary>
-    /// <param name="data">待保存的原始字节。<c>null</c> 视为空数据。</param>
+    /// <param name="data">待保存的原始字节，<c>null</c> 视为空数据。</param>
     /// <returns>MassData 参数字符串。</returns>
     /// <inheritdoc cref="ConvertMassDataToArgument(ReadOnlySpan{byte})"/>
     public static string ConvertMassDataToArgument(byte[]? data)
@@ -149,8 +151,8 @@ public static class CsmMassData
     /// </remarks>
     /// <param name="data">待保存的原始字节。</param>
     /// <param name="dataType">
-    /// 非空的数据类型字符串（例如 <c>"1D I32"</c>）；不允许包含
-    /// <c>';'</c>、<c>'&lt;'</c> 或 <c>'&gt;'</c>。
+    /// 可为空字符串但不能为 <c>null</c> 的数据类型字符串（例如 <c>"1D I32"</c>）；
+    /// 不允许包含 <c>';'</c>、<c>'&lt;'</c> 或 <c>'&gt;'</c>。
     /// </param>
     /// <returns>MassData 参数字符串。</returns>
     /// <exception cref="CsmMassDataException">参数非法或编码失败时抛出。</exception>
@@ -170,7 +172,7 @@ public static class CsmMassData
     /// 将原始数据转换为带数据类型标签的 MassData 参数。
     /// </summary>
     /// <param name="data">待保存的原始字节。<c>null</c> 视为空数据。</param>
-    /// <param name="dataType">非空的数据类型字符串。</param>
+    /// <param name="dataType">可为空字符串但不能为 <c>null</c> 的数据类型字符串。</param>
     /// <returns>MassData 参数字符串。</returns>
     /// <inheritdoc cref="ConvertMassDataToArgumentWithDataType(ReadOnlySpan{byte}, string)"/>
     public static string ConvertMassDataToArgumentWithDataType(byte[]? data, string dataType)
@@ -290,7 +292,7 @@ public static class CsmMassData
         if (dataType is not null)
         {
             // 数据类型不能包含会破坏引用字符串语法的字符。
-            if (dataType.IndexOfAny(new[] { ';', '<', '>' }) >= 0)
+            if (dataType.IndexOfAny(ForbiddenDataTypeChars) >= 0)
             {
                 throw new CsmMassDataException(
                     CsmMassDataStatus.InvalidArgument,
