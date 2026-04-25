@@ -233,5 +233,37 @@ class CsmMassDataTests(unittest.TestCase):
         self.assertEqual(errors, [], msg="\n".join(errors))
 
 
+    # 测试：超长数字串应被快速拒绝（不构造任意精度大整数）
+    def test_parse_long_digit_run_rejected_fast(self) -> None:
+        bad = "<MassData>Start:" + ("9" * 1_000_000) + ";Size:0"
+        status, data = CSM_ConvertArgumentToMassData(bad)
+        self.assertEqual(status, CsmMassDataStatus.ERR_PARSE)
+        self.assertEqual(data, b"")
+
+    # 测试：解析端的 DataType 长度限制与 C 端一致
+    def test_parse_rejects_overlong_data_type(self) -> None:
+        too_long = "x" * CSM_MASSDATA_MAX_DATATYPE_LEN  # 含末尾 NUL 后超限
+        arg = f"<MassData>Start:0;Size:0;DataType:{too_long}"
+        status, dup, dtype = CSM_MassDataDataTypeString(arg)
+        self.assertEqual(status, CsmMassDataStatus.ERR_BUFFER_TOO_SMALL)
+        self.assertEqual(dtype, "")
+
+    # 测试：传入 ``memoryview`` / ``bytearray`` 时不会被多余拷贝破坏数据
+    def test_accepts_bytearray_and_memoryview(self) -> None:
+        ba = bytearray(b"hello world")
+        status, arg = CSM_ConvertMassDataToArgument(ba)
+        self.assertEqual(status, CsmMassDataStatus.OK)
+        status, restored = CSM_ConvertArgumentToMassData(arg)
+        self.assertEqual(status, CsmMassDataStatus.OK)
+        self.assertEqual(restored, bytes(ba))
+
+        mv = memoryview(b"another payload")
+        status, arg = CSM_ConvertMassDataToArgument(mv)
+        self.assertEqual(status, CsmMassDataStatus.OK)
+        status, restored = CSM_ConvertArgumentToMassData(arg)
+        self.assertEqual(status, CsmMassDataStatus.OK)
+        self.assertEqual(restored, bytes(mv))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

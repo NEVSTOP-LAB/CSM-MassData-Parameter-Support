@@ -109,9 +109,17 @@ class _State:
     def __init__(self) -> None:
         # 互斥量保护所有可变成员；模块导入时即创建，避免延迟初始化竞态。
         self.lock = threading.Lock()
-        self.buffer: bytearray = bytearray(CSM_MASSDATA_DEFAULT_CACHE_SIZE)
-        self.capacity: int = CSM_MASSDATA_DEFAULT_CACHE_SIZE
-        # 累计已写入的字节数（与 C 端 ``write_total`` 等价的 64 位单调游标）。
+        try:
+            # 默认在导入阶段就分配好缓冲区，避免任何首次调用的并发竞争。
+            self.buffer: bytearray = bytearray(CSM_MASSDATA_DEFAULT_CACHE_SIZE)
+            self.capacity: int = CSM_MASSDATA_DEFAULT_CACHE_SIZE
+        except MemoryError:
+            # 在受限环境中允许模块继续导入；公开 API 可基于 ``capacity == 0``
+            # 统一返回 ERR_NO_MEMORY，而不是在导入阶段直接抛异常。
+            self.buffer = bytearray()
+            self.capacity = 0
+        # 累计已写入的字节数（与 C 端 ``write_total`` 等价的 64 位单调游标，
+        # 始终保持在 ``[0, 2**64)`` 范围内以匹配跨语言契约）。
         self.write_total: int = 0
         self.last_read = CsmMassDataOperation()
         self.last_write = CsmMassDataOperation()
@@ -125,10 +133,12 @@ _state = _State()
 #  内部辅助函数                                                               #
 # --------------------------------------------------------------------------- #
 
-def _ring_write(src: bytes) -> None:
+def _ring_write(src) -> None:
     """按 ``write_total`` 暗示的位置把 ``src`` 写入环形缓冲区。
 
-    调用方必须已经持有 ``_state.lock``，并已确认 ``len(src) <= capacity``。
+    ``src`` 可以是任何长度等于其字节数的 bytes-like 对象（``bytes`` /
+    ``bytearray`` / 单字节 ``memoryview``）。调用方必须已经持有
+    ``_state.lock``，并已确认 ``len(src) <= capacity``。
     """
     cap = _state.capacity
     offset = _state.write_total % cap
@@ -160,16 +170,31 @@ def _parse_uint64(text: str) -> Tuple[Optional[int], int]:
 
     返回 ``(value, end_index)``。若没有数字或数值超出 64 位无符号
     整数表示范围（与 C 端 ``strtoull`` 的 ``ERANGE`` 等价），则 ``value``
-    为 ``None``。
+    为 ``None``；``end_index`` 仍指向连续数字串的末尾，供调用方继续
+    向后定位分隔符。
+
+    解析采用增量方式并在每一步检测溢出，以便在面对超长数字串时
+    快速失败，避免构造任意精度大整数带来的 CPU / 内存放大。
     """
-    i = 0
     n = len(text)
+    i = 0
+    value = 0
+    overflow = False
+    max_before_mul = _UINT64_MAX // 10
+    max_last_digit = _UINT64_MAX % 10
     while i < n and "0" <= text[i] <= "9":
+        digit = ord(text[i]) - ord("0")
+        if not overflow:
+            if value > max_before_mul or (
+                value == max_before_mul and digit > max_last_digit
+            ):
+                overflow = True
+            else:
+                value = value * 10 + digit
         i += 1
     if i == 0:
         return None, 0
-    value = int(text[:i])
-    if value > _UINT64_MAX:
+    if overflow:
         return None, i
     return value, i
 
@@ -210,25 +235,42 @@ def _parse_argument(argument: str) -> Tuple[CsmMassDataStatus, int, int, str]:
     p = p[1:]
     if not p.startswith("DataType:"):
         return CsmMassDataStatus.ERR_PARSE, 0, 0, ""
-    data_type = p[len("DataType:"):]
+    p = p[len("DataType:"):]
     # 验证 DataType 值仅包含合法字符。
-    for ch in data_type:
+    for ch in p:
         if ch in ";<>":
             return CsmMassDataStatus.ERR_PARSE, 0, 0, ""
-    return CsmMassDataStatus.OK, start, size, data_type
+    # 与 C 端保持一致：DataType 必须能放入固定长度缓冲区（含末尾 NUL）。
+    if len(p) + 1 > CSM_MASSDATA_MAX_DATATYPE_LEN:
+        return CsmMassDataStatus.ERR_BUFFER_TOO_SMALL, 0, 0, ""
+    return CsmMassDataStatus.OK, start, size, p
 
 
-def _coerce_data(data: Optional[Union[bytes, bytearray, memoryview]]) -> Optional[bytes]:
-    """将允许的数据输入归一化为 ``bytes``；无效输入返回 ``None``。
+def _coerce_data(
+        data: Optional[Union[bytes, bytearray, memoryview]]
+) -> Optional[memoryview]:
+    """将允许的数据输入归一化为单字节 ``memoryview``，避免额外拷贝。
 
     与 C 端 ``data_size == 0`` 时允许 ``data == NULL`` 的语义对应：
-    本函数允许 ``data is None``，视作零长度数据。
+    本函数允许 ``data is None``，视作零长度数据。返回的 ``memoryview``
+    会直接传给环形缓冲区的切片赋值，不会构造中间 ``bytes`` 对象，
+    在大负载下可避免一次额外的全量拷贝。
     """
     if data is None:
-        return b""
-    if isinstance(data, (bytes, bytearray, memoryview)):
-        return bytes(data)
-    return None
+        return memoryview(b"")
+    if not isinstance(data, (bytes, bytearray, memoryview)):
+        return None
+    try:
+        mv = memoryview(data)
+    except TypeError:
+        return None
+    if mv.itemsize != 1:
+        # 多维或非字节视图：转换为单字节平面视图（仅创建视图、不拷贝）。
+        try:
+            mv = mv.cast("B")
+        except TypeError:
+            return None
+    return mv
 
 
 # --------------------------------------------------------------------------- #
@@ -285,12 +327,16 @@ def _encode(data: Optional[Union[bytes, bytearray, memoryview]],
                 return CsmMassDataStatus.ERR_INVALID_ARG, ""
 
     with _state.lock:
+        if _state.capacity == 0:
+            return CsmMassDataStatus.ERR_NO_MEMORY, ""
         if len(src) > _state.capacity:
             return CsmMassDataStatus.ERR_CACHE_TOO_SMALL, ""
         start_cursor = _state.write_total
-        if src:
+        if len(src) > 0:
             _ring_write(src)
-            _state.write_total += len(src)
+            # 与 C 端 ``uint64_t`` 一致按 64 位环绕，确保写入足够多数据后
+            # 仍能产生合法的 ``Start:<N>`` 字段且能被解码端正确识别。
+            _state.write_total = (_state.write_total + len(src)) & _UINT64_MAX
         _state.last_write = CsmMassDataOperation(start_cursor, len(src))
 
     if data_type is not None:
@@ -357,18 +403,16 @@ def CSM_ConvertArgumentToMassData(
         return status, b""
 
     with _state.lock:
+        if _state.capacity == 0:
+            return CsmMassDataStatus.ERR_NO_MEMORY, b""
         if size > _state.capacity:
             return CsmMassDataStatus.ERR_OVERWRITTEN, b""
-        # 当前驻留在环形缓冲区中的窗口为
-        # ``[write_total - capacity, write_total)``。任何末端落在该窗口
-        # 之外的请求都视为已被覆盖。Python 整数为任意精度，加法不会
-        # 溢出，但仍按 C 端等价的非溢出比较方式拆开判断，便于跨语言对照。
-        oldest = (_state.write_total - _state.capacity
-                  if _state.write_total > _state.capacity else 0)
-        if start < oldest or start > _state.write_total:
-            return CsmMassDataStatus.ERR_OVERWRITTEN, b""
-        end = start + size
-        if end > _state.write_total:
+        # 当前驻留在环形缓冲区中的窗口为 ``[write_total - capacity, write_total)``，
+        # 但 ``write_total`` 与 ``start`` 都按 64 位无符号语义解释，可能发生
+        # 环绕。使用模 2**64 的“反向距离”可在不依赖绝对大小关系的前提下
+        # 同时覆盖未环绕与环绕两种情形，与 C 端的 ``uint64_t`` 计算等价。
+        distance = (_state.write_total - start) & _UINT64_MAX
+        if distance > _state.capacity or distance < size:
             return CsmMassDataStatus.ERR_OVERWRITTEN, b""
         result = _ring_read(start, size) if size > 0 else b""
         _state.last_read = CsmMassDataOperation(start, size)
