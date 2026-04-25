@@ -16,3 +16,9 @@ c/**/*.pdb
 c/**/*.ilk
 c/**/*.idb
 c/**/*.tlog
+
+# Python build artefacts (under python/)
+python/**/__pycache__/
+python/**/*.pyc
+python/**/*.pyo
+python/**/.pytest_cache/
