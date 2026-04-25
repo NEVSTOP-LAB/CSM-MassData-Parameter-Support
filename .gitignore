@@ -1,3 +1,18 @@
 *.aliases
 *.lvlps
 *.vip
+
+# C / Visual Studio build artefacts (under c/)
+c/**/Debug/
+c/**/Release/
+c/**/x64/
+c/**/x86/
+c/**/.vs/
+c/**/*.user
+c/**/*.suo
+c/**/*.obj
+c/**/*.exe
+c/**/*.pdb
+c/**/*.ilk
+c/**/*.idb
+c/**/*.tlog
