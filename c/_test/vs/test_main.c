@@ -1,17 +1,17 @@
 /**
  * @file    test_main.c
- * @brief   Self-contained test harness for the CSM MassData C API.
+ * @brief   CSM MassData C 接口的独立测试程序。
  *
- * Exercises the public API documented in `csm_massdata.h`:
- *   - cache configuration and status reporting
- *   - encode / decode round-trip without data type
- *   - encode / decode round-trip with data type
- *   - data-type extraction (CSM - MassData Data Type String)
- *   - parse error handling
- *   - circular-buffer overwrite detection
+ * 覆盖 `csm_massdata.h` 中公开的所有 API：
+ *   - 缓冲区配置与状态查询
+ *   - 不带数据类型的编码 / 解码往返
+ *   - 带数据类型的编码 / 解码往返
+ *   - 数据类型解析（CSM - MassData Data Type String）
+ *   - 解析错误的处理
+ *   - 环形缓冲区覆盖检测
  *
- * The harness exits with a non-zero status if any assertion fails so it can
- * be used both interactively and inside CI pipelines.
+ * 任意断言失败时程序以非零状态退出，方便在交互模式与 CI 流水线中
+ * 同时使用。
  */
 
 #include "csm_massdata.h"
@@ -37,6 +37,7 @@ static int g_total    = 0;
         }                                                                     \
     } while (0)
 
+/* 测试：缓冲区配置与状态查询 */
 static void test_config_and_status(void)
 {
     csm_massdata_operation_t r, w;
@@ -49,6 +50,7 @@ static void test_config_and_status(void)
     CSM_TEST(r.size == 0 && w.size == 0);
 }
 
+/* 测试：不带数据类型的编码 / 解码往返 */
 static void test_roundtrip_plain(void)
 {
     const int32_t source[8] = { 10, 20, 30, 40, 50, 60, 70, 80 };
@@ -68,6 +70,7 @@ static void test_roundtrip_plain(void)
     CSM_TEST(memcmp(source, restored, sizeof(source)) == 0);
 }
 
+/* 测试：带数据类型的编码 / 解码往返 */
 static void test_roundtrip_with_type(void)
 {
     const double  source[4] = { 1.5, -2.5, 3.5, -4.5 };
@@ -96,6 +99,7 @@ static void test_roundtrip_with_type(void)
     CSM_TEST(memcmp(source, restored, sizeof(source)) == 0);
 }
 
+/* 测试：参数中没有数据类型字段时，解析结果应为空字符串 */
 static void test_datatype_absent(void)
 {
     char arg[CSM_MASSDATA_MAX_ARGUMENT_LEN];
@@ -111,6 +115,7 @@ static void test_datatype_absent(void)
     CSM_TEST(type[0] == '\0');
 }
 
+/* 测试：解析非法字符串时返回 PARSE 错误 */
 static void test_parse_errors(void)
 {
     size_t out = 0;
@@ -126,6 +131,7 @@ static void test_parse_errors(void)
              == CSM_MASSDATA_ERR_PARSE);
 }
 
+/* 测试：旧数据被环形缓冲区覆盖后，应报告 OVERWRITTEN */
 static void test_overwrite_detection(void)
 {
     char     first_arg[CSM_MASSDATA_MAX_ARGUMENT_LEN];
@@ -136,7 +142,7 @@ static void test_overwrite_detection(void)
     size_t   out = 0;
     int      i;
 
-    /* Tiny cache so a follow-up write evicts the first payload. */
+    /* 缓冲区故意设得很小，后续写入会把第一份数据挤掉。 */
     CSM_TEST(CSM_ConfigMassDataParameterCacheSize(32) == CSM_MASSDATA_OK);
     CSM_TEST(CSM_ConvertMassDataToArgument(small, sizeof(small),
                                            first_arg, sizeof(first_arg))
@@ -150,6 +156,7 @@ static void test_overwrite_detection(void)
              == CSM_MASSDATA_ERR_OVERWRITTEN);
 }
 
+/* 测试：输出缓冲区太小时返回 BUFFER_TOO_SMALL，并报告所需大小 */
 static void test_buffer_too_small(void)
 {
     const uint8_t payload[10] = { 0 };
@@ -165,6 +172,7 @@ static void test_buffer_too_small(void)
     CSM_TEST(out == sizeof(payload));
 }
 
+/* 测试：写入数据大于缓冲区容量时返回 CACHE_TOO_SMALL */
 static void test_cache_too_small(void)
 {
     char arg[CSM_MASSDATA_MAX_ARGUMENT_LEN];
@@ -175,6 +183,7 @@ static void test_cache_too_small(void)
              == CSM_MASSDATA_ERR_CACHE_TOO_SMALL);
 }
 
+/* 测试：状态查询应当反映最近一次的读 / 写操作 */
 static void test_status_reflects_last_ops(void)
 {
     csm_massdata_operation_t r, w;
@@ -197,8 +206,8 @@ static void test_status_reflects_last_ops(void)
 
 int main(void)
 {
-    printf("CSM MassData C API test suite\n");
-    printf("=============================\n");
+    printf("CSM MassData C API 测试套件\n");
+    printf("===========================\n");
 
     test_config_and_status();
     test_roundtrip_plain();
@@ -210,7 +219,7 @@ int main(void)
     test_cache_too_small();
     test_status_reflects_last_ops();
 
-    printf("\n%d/%d assertions passed, %d failed.\n",
+    printf("\n%d/%d 个断言通过，%d 个失败。\n",
            g_total - g_failures, g_total, g_failures);
     return (g_failures == 0) ? 0 : 1;
 }

@@ -1,14 +1,12 @@
 /**
  * @file    csm_massdata.c
- * @brief   Implementation of the CSM MassData Parameter Support C API.
+ * @brief   CSM MassData Parameter Support C 接口的实现。
  *
- * The MassData cache is a single, process-wide circular buffer guarded by a
- * mutex. Each successful encode advances a monotonically increasing 64-bit
- * write cursor (`write_total`) and copies the payload into the ring at
- * `write_total % capacity`, possibly wrapping around. The cursor value is
- * embedded in the returned `Start:` field so that decoders can detect whether
- * the requested payload is still resident or has already been overwritten by
- * later writes.
+ * MassData 缓存是进程内唯一的环形缓冲区，由互斥量保护。每次成功的
+ * 编码会推进一个单调递增的 64 位写游标 `write_total`，并将数据
+ * 复制到环形缓冲区中 `write_total % capacity` 的位置（必要时回绕）。
+ * 该游标值会被写入返回字符串的 `Start:` 字段，从而让解码端能够
+ * 判断引用的数据是否仍驻留在缓存中、还是已经被后续写入覆盖。
  */
 
 #include "csm_massdata.h"
@@ -34,7 +32,7 @@ typedef pthread_mutex_t csm_mutex_t;
 #endif
 
 /* ------------------------------------------------------------------------- */
-/*  Internal state                                                           */
+/*  内部状态                                                                 */
 /* ------------------------------------------------------------------------- */
 
 #define CSM_MASSDATA_PREFIX "<MassData>"
@@ -42,9 +40,9 @@ typedef pthread_mutex_t csm_mutex_t;
 typedef struct csm_massdata_state_s {
     int                       initialized;
     csm_mutex_t               mutex;
-    uint8_t                  *buffer;       /* Circular byte buffer.       */
-    size_t                    capacity;     /* Allocated buffer size.      */
-    uint64_t                  write_total;  /* Bytes ever written.         */
+    uint8_t                  *buffer;       /* 环形字节缓冲区。            */
+    size_t                    capacity;     /* 缓冲区已分配的大小。        */
+    uint64_t                  write_total;  /* 累计已写入的字节数。        */
     csm_massdata_operation_t  last_read;
     csm_massdata_operation_t  last_write;
 } csm_massdata_state_t;
@@ -56,11 +54,10 @@ static void csm_massdata_lazy_init(void)
     if (g_state.initialized) {
         return;
     }
-    /* The first call into the API is responsible for allocating the default
-     * cache. The init flag itself is protected by the mutex once it exists,
-     * but the first-time allocation is racy in a multi-threaded program, so
-     * callers that care should invoke
-     * CSM_ConfigMassDataParameterCacheSize() at startup. */
+    /* 第一次调用本模块的 API 时负责分配默认缓冲区。
+     * 一旦初始化完成，该标志将由互斥量保护；但首次分配本身
+     * 在多线程程序中存在竞态，因此关心线程安全的调用方应当
+     * 在程序启动时主动调用 CSM_ConfigMassDataParameterCacheSize()。 */
     g_state.buffer = (uint8_t *)malloc(CSM_MASSDATA_DEFAULT_CACHE_SIZE);
     g_state.capacity = (g_state.buffer != NULL) ? CSM_MASSDATA_DEFAULT_CACHE_SIZE : 0u;
     g_state.write_total = 0u;
@@ -71,7 +68,7 @@ static void csm_massdata_lazy_init(void)
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Helpers                                                                  */
+/*  内部辅助函数                                                             */
 /* ------------------------------------------------------------------------- */
 
 static int csm_massdata_starts_with(const char *s, const char *prefix)
@@ -85,15 +82,14 @@ static int csm_massdata_starts_with(const char *s, const char *prefix)
 }
 
 /**
- * Parse a MassData argument string of the form
- * `<MassData>Start:<N>;Size:<N>[;DataType:<T>]`.
+ * 解析形如 `<MassData>Start:<N>;Size:<N>[;DataType:<T>]` 的 MassData
+ * 参数字符串。
  *
- * @param[out] data_type        Optional output buffer for the data-type tag.
- * @param[in]  data_type_cap    Capacity of @p data_type.
+ * @param[out] data_type        可选的数据类型标签输出缓冲区。
+ * @param[in]  data_type_cap    @p data_type 的容量。
  *
- * @return CSM_MASSDATA_OK on success, CSM_MASSDATA_ERR_PARSE on malformed
- *         input, or CSM_MASSDATA_ERR_BUFFER_TOO_SMALL if the data-type tag
- *         does not fit in @p data_type.
+ * @return 成功返回 CSM_MASSDATA_OK；输入非法返回 CSM_MASSDATA_ERR_PARSE；
+ *         数据类型标签放不下时返回 CSM_MASSDATA_ERR_BUFFER_TOO_SMALL。
  */
 static csm_massdata_status_t csm_massdata_parse(const char *argument,
                                                 uint64_t   *start_out,
@@ -135,7 +131,7 @@ static csm_massdata_status_t csm_massdata_parse(const char *argument,
     *size_out = (uint64_t)tmp;
     p = end;
 
-    /* Optional ;DataType:<T> trailer. */
+    /* 可选的 ;DataType:<T> 后缀。 */
     if (data_type != NULL && data_type_cap > 0u) {
         data_type[0] = '\0';
     }
@@ -161,9 +157,9 @@ static csm_massdata_status_t csm_massdata_parse(const char *argument,
 }
 
 /**
- * Copy @p size bytes from @p src into the circular buffer at the position
- * implied by the current value of @c g_state.write_total. The caller must
- * hold the mutex and must have validated that @p size <= capacity.
+ * 将 @p src 指向的 @p size 字节按照 @c g_state.write_total 暗示的位置
+ * 写入环形缓冲区。调用者必须持有互斥量，并已确保 @p size 不大于
+ * 缓冲区容量。
  */
 static void csm_massdata_ring_write(const uint8_t *src, size_t size)
 {
@@ -179,9 +175,8 @@ static void csm_massdata_ring_write(const uint8_t *src, size_t size)
 }
 
 /**
- * Copy @p size bytes from the circular buffer (starting at the absolute
- * cursor @p start) into @p dst. The caller must hold the mutex and must
- * have validated that the requested range is still resident.
+ * 从环形缓冲区中以绝对游标 @p start 起始位置读取 @p size 字节到
+ * @p dst。调用者必须持有互斥量，并已确认所请求的范围仍然驻留。
  */
 static void csm_massdata_ring_read(uint64_t start, uint8_t *dst, size_t size)
 {
@@ -197,7 +192,7 @@ static void csm_massdata_ring_read(uint64_t start, uint8_t *dst, size_t size)
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Public API                                                               */
+/*  公开 API                                                                 */
 /* ------------------------------------------------------------------------- */
 
 csm_massdata_status_t CSM_ConfigMassDataParameterCacheSize(size_t size)
@@ -247,7 +242,7 @@ static csm_massdata_status_t csm_massdata_encode(const void *data,
         if (dt_len + 1u > CSM_MASSDATA_MAX_DATATYPE_LEN) {
             return CSM_MASSDATA_ERR_BUFFER_TOO_SMALL;
         }
-        /* Reject characters that would break the reference-string grammar. */
+        /* 拒绝可能破坏引用字符串语法的字符。 */
         if (strpbrk(data_type, ";<>") != NULL) {
             return CSM_MASSDATA_ERR_INVALID_ARG;
         }
@@ -349,9 +344,9 @@ csm_massdata_status_t CSM_ConvertArgumentToMassData(const char *argument,
         CSM_MUTEX_UNLOCK(&g_state.mutex);
         return CSM_MASSDATA_ERR_OVERWRITTEN;
     }
-    /* The window currently resident in the ring is
-     * [write_total - capacity, write_total). Reject any payload whose end
-     * lies outside this window. */
+    /* 当前驻留在环形缓冲区中的窗口为
+     * [write_total - capacity, write_total)。任何末端落在该窗口
+     * 之外的请求都视为已被覆盖。 */
     {
         uint64_t end = start + size;
         uint64_t oldest = (g_state.write_total > (uint64_t)g_state.capacity)

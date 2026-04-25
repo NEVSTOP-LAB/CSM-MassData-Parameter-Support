@@ -11,7 +11,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\csm_massdata.c">
+    <ClCompile Include="..\..\src\csm_massdata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="test_main.c">
@@ -19,7 +19,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\csm_massdata.h">
+    <ClInclude Include="..\..\include\csm_massdata.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
