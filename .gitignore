@@ -27,3 +27,9 @@ csharp/**/x86/
 csharp/**/.vs/
 csharp/**/*.user
 csharp/**/*.suo
+
+# Python build artefacts (under python/)
+python/**/__pycache__/
+python/**/*.pyc
+python/**/*.pyo
+python/**/.pytest_cache/
