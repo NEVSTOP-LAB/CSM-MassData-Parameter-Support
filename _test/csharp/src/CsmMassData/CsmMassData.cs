@@ -7,6 +7,122 @@ using System.Globalization;
 namespace Csm.MassData;
 
 /// <summary>
+/// CSM MassData 接口在出错时返回的状态码。
+/// </summary>
+/// <remarks>
+/// 数值与 C 语言移植版本（<c>csm_massdata_status_t</c>）以及
+/// LabVIEW 端的错误约定保持一致，方便跨语言调试。
+/// </remarks>
+public enum CsmMassDataStatus
+{
+    /// <summary>操作成功完成。</summary>
+    Ok = 0,
+
+    /// <summary>参数为 <c>null</c> 或语义上无效。</summary>
+    InvalidArgument = -1,
+
+    /// <summary>调用方提供的输出缓冲区不足以容纳结果。</summary>
+    BufferTooSmall = -2,
+
+    /// <summary>MassData 参数字符串无法解析。</summary>
+    ParseError = -3,
+
+    /// <summary>引用的数据已被环形缓冲区后续写入覆盖，无法恢复。</summary>
+    Overwritten = -4,
+
+    /// <summary>待写入的数据大于当前配置的缓冲区容量。</summary>
+    CacheTooSmall = -5,
+
+    /// <summary>内存分配失败。</summary>
+    NoMemory = -6,
+}
+
+/// <summary>
+/// 描述一次对 MassData 环形缓冲区的读或写操作。
+/// </summary>
+/// <remarks>
+/// 与 LabVIEW 端 <c>CSM - MassData Parameter Status.vi</c> 输出的
+/// <c>Active Read Operation</c> / <c>Active Write Operation</c> 簇
+/// 在字段命名与语义上完全一致。
+/// </remarks>
+public readonly struct CsmMassDataOperation : IEquatable<CsmMassDataOperation>
+{
+    /// <summary>
+    /// 使用指定的起始游标与字节数构造一次操作描述。
+    /// </summary>
+    /// <param name="start">在缓冲区中的起始偏移量（字节）。</param>
+    /// <param name="size">该次操作涉及的字节数。</param>
+    public CsmMassDataOperation(ulong start, ulong size)
+    {
+        this.Start = start;
+        this.Size = size;
+    }
+
+    /// <summary>获取该次操作在环形缓冲区中的起始偏移量（字节）。</summary>
+    public ulong Start { get; }
+
+    /// <summary>获取该次操作涉及的字节数。</summary>
+    public ulong Size { get; }
+
+    /// <inheritdoc/>
+    public bool Equals(CsmMassDataOperation other)
+        => this.Start == other.Start && this.Size == other.Size;
+
+    /// <inheritdoc/>
+    public override bool Equals(object? obj)
+        => obj is CsmMassDataOperation other && this.Equals(other);
+
+    /// <inheritdoc/>
+    public override int GetHashCode() => HashCode.Combine(this.Start, this.Size);
+
+    /// <summary>判断两次操作描述是否完全相同。</summary>
+    public static bool operator ==(CsmMassDataOperation left, CsmMassDataOperation right)
+        => left.Equals(right);
+
+    /// <summary>判断两次操作描述是否不同。</summary>
+    public static bool operator !=(CsmMassDataOperation left, CsmMassDataOperation right)
+        => !left.Equals(right);
+}
+
+/// <summary>
+/// 当 <see cref="CsmMassData"/> 中的任意 API 检测到错误时抛出。
+/// </summary>
+/// <remarks>
+/// <see cref="Status"/> 属性给出了与 C 语言移植版本对齐的错误码，
+/// 便于在异常处理逻辑中以与 LabVIEW / C 一致的语义进行分支。
+/// </remarks>
+public sealed class CsmMassDataException : Exception
+{
+    /// <summary>
+    /// 使用指定的错误状态与人类可读的描述构造异常。
+    /// </summary>
+    /// <param name="status">触发异常的错误状态。</param>
+    /// <param name="message">面向开发者的错误描述。</param>
+    public CsmMassDataException(CsmMassDataStatus status, string message)
+        : base(message)
+    {
+        this.Status = status;
+    }
+
+    /// <summary>
+    /// 使用指定的错误状态、描述与内层异常构造异常。
+    /// </summary>
+    /// <param name="status">触发异常的错误状态。</param>
+    /// <param name="message">面向开发者的错误描述。</param>
+    /// <param name="innerException">引发本异常的底层异常。</param>
+    public CsmMassDataException(CsmMassDataStatus status, string message, Exception innerException)
+        : base(message, innerException)
+    {
+        this.Status = status;
+    }
+
+    /// <summary>
+    /// 获取与 C / LabVIEW 端语义一致的错误状态码。
+    /// </summary>
+    public CsmMassDataStatus Status { get; }
+}
+
+/// <summary>
 /// CSM MassData Parameter Support 插件的 C# 移植版本。
 /// </summary>
 /// <remarks>
