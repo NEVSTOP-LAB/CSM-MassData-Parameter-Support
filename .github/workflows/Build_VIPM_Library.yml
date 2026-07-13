@@ -65,7 +65,7 @@ jobs:
         uses: NEVSTOP-LAB/vipm-BuildViPackage@main
         with:
           LabVIEW_Version: 2017
-          VipbPath: ${{ github.workspace }}\LabVIEW\Communicable-State-Machine\Communicable-State-Machine.vipb
+          VipbPath: ${{ github.workspace }}
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.3.2

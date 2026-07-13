@@ -3,33 +3,33 @@
 *.vip
 
 # C / Visual Studio build artefacts (under c/)
-c/**/Debug/
-c/**/Release/
-c/**/x64/
-c/**/x86/
-c/**/.vs/
-c/**/*.user
-c/**/*.suo
-c/**/*.obj
-c/**/*.exe
-c/**/*.pdb
-c/**/*.ilk
-c/**/*.idb
-c/**/*.tlog
+**/Debug/**
+**/Release/**
+**/x64/*
+**/x86/*
+**/.vs/*
+*.user
+*.suo
+*.obj
+*.exe
+*.pdb
+*.ilk
+*.idb
+*.tlog
 
 # C# / .NET / Visual Studio build artefacts (under csharp/)
-csharp/**/bin/
-csharp/**/obj/
-csharp/**/Debug/
-csharp/**/Release/
-csharp/**/x64/
-csharp/**/x86/
-csharp/**/.vs/
-csharp/**/*.user
-csharp/**/*.suo
+**/bin/**
+**/obj/**
+**/Debug/**
+**/Release/**
+**/x64/**
+**/x86/**
+**/.vs/**
+*.user
+*.suo
 
 # Python build artefacts (under python/)
-python/**/__pycache__/
-python/**/*.pyc
-python/**/*.pyo
-python/**/.pytest_cache/
+**/__pycache__/**
+*.pyc
+*.pyo
+**/.pytest_cache/**

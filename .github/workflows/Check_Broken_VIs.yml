@@ -59,7 +59,7 @@ jobs:
         with:
           LabVIEW_Version: 2017
           Operation: VIAn_CheckBrokenVIs
-          Parameter1: ${{ github.workspace }}\LabVIEW\
+          Parameter1: ${{ github.workspace }}
           Parameter2: NOPASSWORD
           Parameter3: YES
           Parameter4: -placeContent
