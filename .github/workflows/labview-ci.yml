@@ -1,0 +1,97 @@
+# Merged LabVIEW CI workflow
+# Combines Build_VIPM_Library.yml and Check_Broken_VIs.yml into one pipeline:
+#   Check_Broken_VIs -> Build_VIPM_Library
+# All steps run sequentially on the SAME (self-hosted) machine with a SINGLE checkout.
+
+name: LabVIEW CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.drawio'
+      - '**.png'
+      - '**.svg'
+      - '**.json'
+      - '**.yml'
+      - 'c/**'
+      - 'csharp/**'
+
+  push:
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.drawio'
+      - '**.png'
+      - '**.svg'
+      - '**.json'
+      - '**.yml'
+      - 'c/**'
+      - 'csharp/**'
+
+  workflow_dispatch:
+
+jobs:
+  labview_ci:
+    runs-on: [self-hosted, lv2017]
+
+    steps:
+      # Get env variables
+      # https://github.com/marketplace/actions/github-environment-variables-action
+      - uses: FranzDiebold/github-env-vars-action@v2
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # --- Step 1: Check for broken VIs ---
+      - uses: NEVSTOP-LAB/InstallNevstopPackage@main
+        with:
+          LabVIEW_Version: 2017
+          NEVSTOP-FTP-IP: ${{ secrets.VIPM_FTP_IP }}
+          NEVSTOP-FTP-PORT: ${{ secrets.VIPM_FTP_PORT }}
+          PackageName: Communicable-State-Machine
+
+      - id: Check_Broken_VIs
+        uses: NEVSTOP-LAB/lvCICD@main
+        with:
+          LabVIEW_Version: 2017
+          Operation: VIAn_CheckBrokenVIs
+          Parameter1: ${{ github.workspace }}
+          Parameter2: NOPASSWORD
+          Parameter3: YES
+          Parameter4: -placeContent
+
+      # --- Step 2: Build the VIPM library ---
+      - name: BuildDailyVIP
+        id: build-vip
+        uses: NEVSTOP-LAB/vipm-BuildViPackage@main
+        with:
+          LabVIEW_Version: 2017
+          VipbPath: ${{ github.workspace }}
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.3.2
+        with:
+          # Artifact name
+          name: ${{ steps.build-vip.outputs.vipName }}
+          path: ${{ steps.build-vip.outputs.vipPathName }}
+          # The desired behavior if no files are found using the provided path.
+          if-no-files-found: warn
+          retention-days: 90
+
+      # Backup generated files by ftp
+      # https://github.com/marketplace/actions/simple-ftp-upload
+      - name: backup Build Artifact by ftp
+        uses: dennisameling/ftp-upload-action@v1.0.9
+        with:
+          server: ${{ secrets.VIPM_FTP_IP }}
+          port: ${{ secrets.VIPM_FTP_PORT }}
+          username: ${{ secrets.VIPM_FTP_USER }}
+          password: ${{ secrets.VIPM_FTP_PASSWORD }}
+          secure: false
+          server_dir: /${{ env.CI_REPOSITORY_OWNER_SLUG }}/${{ env.CI_REPOSITORY_NAME }}/${{ env.CI_ACTION_REF_NAME }}/
+          local_dir: ./vip/
