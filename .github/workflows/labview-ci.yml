@@ -12,21 +12,11 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  pull_request:
-    branches:
-      - main
-    types: [closed]
-    paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '**.drawio'
-      - '**.png'
-      - '**.svg'
-      - '**.json'
-      - '**.yml'
-      - 'c/**'
-      - 'csharp/**'
-
+  # 触发方式：push（任意分支）+ 手动 workflow_dispatch。
+  # 不使用 pull_request(closed)：该事件下 github.ref 是 base 分支（main），与合并产生
+  # 的 push(main) 进入同一个 concurrency 组，先启动的 push 运行会被后启动的 closed
+  # 运行取消，main 的构建与 FTP 归档因此丢失。
+  # paths-ignore 不含 '**.yml'：工作流/配置文件的改动同样需要一次构建验证。
   push:
     paths-ignore:
       - '**.md'
@@ -35,7 +25,6 @@ on:
       - '**.png'
       - '**.svg'
       - '**.json'
-      - '**.yml'
       - 'c/**'
       - 'csharp/**'
 
